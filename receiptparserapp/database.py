@@ -1,7 +1,7 @@
 # database.py (Final Cleaned Version)
 import sqlite3
 from typing import List, Dict, Any
-from receiptparserapp.models import Receipt
+from models import Receipt
 
 DB_NAME = "receipts.db"
 

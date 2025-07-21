@@ -1,51 +1,56 @@
 # app.py (Final Polished and Corrected Version)
-
 import streamlit as st
 import pandas as pd
 from PIL import Image
 from datetime import datetime
 import plotly.express as px
 
-# Import all custom modules
-import receiptparserapp.database as db
-import receiptparserapp.ocr_utils as ocr_utils
-import receiptparserapp.data_extraction as data_extraction
-from receiptparserapp.models import Receipt
-import receiptparserapp.algorithms as algorithms
+import database as db
+import ocr_utils
+import data_extraction
+from models import Receipt
+import algorithms
 
-# --- Page Configuration ---
-st.set_page_config(page_title="Receipt Parser & Analyst", page_icon="🧾", layout="wide")
+st.set_page_config(page_title="Receipt Parser Pro", page_icon="🧾", layout="wide")
 
-# --- Processing Function ---
-def process_and_save_image(uploaded_file):
-    """Processes an image file using Gemini Vision and saves the result."""
+def process_and_save_file(uploaded_file):
+    """Processes any supported file type, dispatches to the correct parser, and saves."""
     try:
-        image = Image.open(uploaded_file)
-        parsed_data = data_extraction.parse_receipt_with_vision(image)
+        # Step 1: Process file to get either an Image or a string
+        content = ocr_utils.process_file(uploaded_file)
+        
+        if isinstance(content, Image.Image):
+            # Step 2a: If it's an image, use the vision parser
+            parsed_data = data_extraction.parse_receipt_with_vision(content)
+        elif isinstance(content, str):
+            # Step 2b: If it's text, use the text parser
+            parsed_data = data_extraction.parse_receipt_with_text(content)
+        else:
+            st.warning(f"Could not process file '{uploaded_file.name}'. It might be empty or corrupted.")
+            return False
+
+        # Step 3: Save the result for manual correction
         receipt_obj = Receipt(**parsed_data)
         db.insert_receipt(receipt_obj)
         return True
     except Exception as e:
-        st.error(f"Failed to process image '{uploaded_file.name}': {e}")
+        st.error(f"Failed to process '{uploaded_file.name}': {e}")
         return False
 
-# --- Main Application ---
 def main():
-    st.title("Receipt Parser & Manager")
-    st.write("Configure your AI, upload receipts, edit the extracted data, and view analytics.")
+    st.title("🧾 Receipt Parser & Manager")
+    st.write("Configure your AI, then upload any receipt file (.jpg, .png, .pdf, .txt).")
     db.init_db()
 
-    # --- Sidebar ---
     with st.sidebar:
-        st.header("AI Configuration")
+        st.header("⚙️ AI Configuration")
         api_key = st.text_input("Enter your Gemini API Key", type="password")
-        # FIX: Corrected the invalid model name
-        model_name = st.selectbox("Select Vision Model", ("gemini-1.5-flash", "gemini-2.5-flash", "gemini-1.5-pro"))
+        model_name = st.selectbox("Select Vision Model", ("gemini-1.5-flash", "gemini-1.5-pro"))
         
         if api_key:
             try:
                 data_extraction.configure_model(api_key, model_name)
-                st.success("AI Vision model configured.")
+                st.success("AI model configured.")
                 st.session_state['ai_ready'] = True
             except Exception as e:
                 st.error(f"AI Config Failed: {e}")
@@ -57,14 +62,20 @@ def main():
         ai_is_ready = st.session_state.get('ai_ready', False)
         if not ai_is_ready: st.warning("Enter API key to enable uploads.")
         
-        uploaded_files = st.file_uploader("Choose image files", type=["jpg", "png", "jpeg"], accept_multiple_files=True, disabled=not ai_is_ready)
+        # FIX: Add .pdf and .txt back to the list of accepted types
+        uploaded_files = st.file_uploader(
+            "Choose receipt files", 
+            type=["jpg", "png", "jpeg", "pdf", "txt"], 
+            accept_multiple_files=True, 
+            disabled=not ai_is_ready
+        )
 
         if st.button("Process Uploaded Files", disabled=not ai_is_ready):
             if uploaded_files:
                 success_count, fail_count = 0, 0
-                with st.spinner("Analyzing images with AI..."):
+                with st.spinner("Analyzing files with AI..."):
                     for file in uploaded_files:
-                        if process_and_save_image(file): success_count += 1
+                        if process_and_save_file(file): success_count += 1
                         else: fail_count += 1
                 st.success(f"Processing complete! Success: {success_count}, Failed: {fail_count}.")
                 if success_count > 0: st.rerun()

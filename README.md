@@ -7,14 +7,14 @@ A full-stack AI-powered web application that lets users upload receipt images, e
 
 ## Features
 
-- ** AI-Powered Parsing:** Gemini Vision API (google-generativeai) or fallback OCR (Tesseract)
-- ** File Upload & Ingestion:** Supports `.jpg`, `.jpeg`, `.png`, `.pdf`, `.txt`
-- ** Manual Search & Filtering:** Vendor, date range, amount range
-- ** Custom Algorithms:** Aggregations, vendor trends, and time-series
-- ** Editable UI:** Edit and correct receipt data in-app
-- ** Database Management:** Edit, delete, clear all receipts
-- ** Export:** Download filtered data as CSV or JSON
-- ** Analytics Dashboard:** Spend distributions, vendor breakdown, monthly trends
+- **AI-Powered Parsing:** Gemini Vision API (google-generativeai) or fallback OCR (Tesseract)
+- **File Upload & Ingestion:** Supports `.jpg`, `.jpeg`, `.png`, `.pdf`, `.txt`
+- **Manual Search & Filtering:** Vendor, date range, amount range
+- **Custom Algorithms:** Aggregations, vendor trends, and time-series
+- **Editable UI:** Edit and correct receipt data in-app
+- **Database Management:** Edit, delete, clear all receipts
+- **Export:** Download filtered data as CSV or JSON
+- **Analytics Dashboard:** Spend distributions, vendor breakdown, monthly trends
 
 ---
 
@@ -51,7 +51,7 @@ receiptparserapp/
 
 ### 1. Clone the Repository
 ```sh
-git clone <your-repo-url>
+git clone https://github.com/lakshitaa4/receiptparserandanalyser.git
 cd receiptparserapp
 ```
 

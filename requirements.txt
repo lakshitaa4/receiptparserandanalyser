@@ -1,0 +1,15 @@
+
+google-generativeai==0.8.5
+
+opencv-python-headless==4.12.0.88
+pydantic
+pandas==2.3.1
+pdf2image==1.17.0
+pillow==11.3.0
+plotly==6.2.0
+
+pytesseract==0.3.13
+
+requests==2.32.4
+
+streamlit==1.47.0

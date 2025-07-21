@@ -45,7 +45,7 @@ def main():
     with st.sidebar:
         st.header("⚙️ AI Configuration")
         api_key = st.text_input("Enter your Gemini API Key", type="password")
-        model_name = st.selectbox("Select Vision Model", ("gemini-1.5-flash", "gemini-1.5-pro"))
+        model_name = st.selectbox("Select Vision Model", ("gemini-1.5-flash", "gemini-1.5-pro", "gemini-2.5-flash"))
         
         if api_key:
             try:
